@@ -1,0 +1,22 @@
+{
+  "name": "@adriangalilea/tghtml",
+  "version": "0.1.0",
+  "description": "Transform arbitrary HTML (especially from LLMs) into Telegram-compatible HTML format",
+  "license": "MIT",
+  "author": "Adrian Galilea <adriangalilea@gmail.com> (https://adriangalilea.com)",
+  "exports": "./mod.ts",
+  "tasks": {
+    "test": "deno test",
+    "check": "deno check mod.ts"
+  },
+  "fmt": {
+    "indentWidth": 2,
+    "lineWidth": 100,
+    "singleQuote": false
+  },
+  "publish": {
+    "include": ["mod.ts", "README.md", "LICENSE"]
+  },
+  "repository": "https://github.com/adriangalilea/tghtml",
+  "keywords": ["telegram", "html", "transform", "llm", "bot"]
+}
