@@ -1,0 +1,42 @@
+<h1>Sample HTML Document</h1>
+
+<p>This is a test document to visualize the transformation to Telegram-compatible HTML.</p>
+
+<h2>Formatting Options</h2>
+
+<ul>
+  <li><b>Bold text</b> - supported in Telegram</li>
+  <li><i>Italic text</i> - supported in Telegram</li>
+  <li><u>Underlined text</u> - supported in Telegram</li>
+  <li><s>Strikethrough text</s> - supported in Telegram</li>
+  <li><spoiler>Hidden spoiler text</spoiler> - converted to Telegram format</li>
+</ul>
+
+<blockquote>
+  This is a blockquote that should be preserved.
+  It can contain multiple lines.
+</blockquote>
+
+<pre><code class="language-javascript">
+// Code block with language
+function example() {
+  console.log("Hello Telegram!");
+}
+</code></pre>
+
+<p>Here's a <a href="example.com">link without protocol</a> that should get https:// added.</p>
+
+<div class="unsupported-container">
+  <p>Nested content in unsupported containers should be preserved with proper spacing.</p>
+  <p>Another paragraph with <b>formatting</b> inside.</p>
+</div>
+
+<h3>Lists Example</h3>
+
+<ol>
+  <li>First ordered item</li>
+  <li>Second ordered item with <i>formatting</i></li>
+  <li>Third ordered item</li>
+</ol>
+
+<tg-emoji emoji-id="5368324170671202286">👍</tg-emoji> Custom emoji support
