@@ -1,6 +1,6 @@
 /**
  * tghtml - Tests
- * 
+ *
  * These tests verify that HTML is properly transformed into Telegram-compatible format.
  */
 
@@ -86,10 +86,8 @@ Deno.test("Preserves Telegram-specific tg:// URLs", () => {
 // === Special Elements ===
 
 Deno.test("Preserves code blocks with language classes", () => {
-  const input =
-    '<pre><code class="language-python">print("Hello World")</code></pre>';
-  const expected =
-    '<pre><code class="language-python">print("Hello World")</code></pre>';
+  const input = '<pre><code class="language-python">print("Hello World")</code></pre>';
+  const expected = '<pre><code class="language-python">print("Hello World")</code></pre>';
   assertEquals(transform(input), expected);
 });
 
@@ -101,8 +99,7 @@ Deno.test("Preserves standard blockquotes", () => {
 
 Deno.test("Handles expandable blockquotes with empty attribute", () => {
   const input = "<blockquote expandable>Expandable quote\nLine 2</blockquote>";
-  const expected =
-    '<blockquote expandable="">Expandable quote\nLine 2</blockquote>';
+  const expected = '<blockquote expandable="">Expandable quote\nLine 2</blockquote>';
   assertEquals(transform(input), expected);
 });
 
@@ -159,27 +156,28 @@ Deno.test("Transforms list items to bullet points", () => {
 Deno.test("Properly spaces content with lists", () => {
   const input = "<div>Introduction</div><ul><li>Item 1</li><li>Item 2</li></ul><p>Conclusion</p>";
   const actual = transform(input);
-  
+
   // Check key formatting patterns
   assertEquals(actual.includes("Introduction"), true);
   assertEquals(actual.includes("• Item 1\n• Item 2"), true);
   assertEquals(actual.includes("Conclusion"), true);
-  
+
   // Make sure there is spacing between sections
   assertEquals(/Introduction.*?• Item 1/s.test(actual), true);
   assertEquals(/Item 2.*?Conclusion/s.test(actual), true);
 });
 
 Deno.test("Handles multiple block elements with proper spacing", () => {
-  const input = "<div>First block</div><div>Second block</div><p>A paragraph</p><ul><li>List item</li></ul>";
+  const input =
+    "<div>First block</div><div>Second block</div><p>A paragraph</p><ul><li>List item</li></ul>";
   const actual = transform(input);
-  
+
   // Check for correct content
   assertEquals(actual.includes("First block"), true);
   assertEquals(actual.includes("Second block"), true);
   assertEquals(actual.includes("A paragraph"), true);
   assertEquals(actual.includes("• List item"), true);
-  
+
   // Check proper double spacing between blocks
   assertEquals(actual.includes("First block\n\nSecond block"), true);
   assertEquals(actual.includes("Second block\n\nA paragraph"), true);

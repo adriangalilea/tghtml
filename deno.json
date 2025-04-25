@@ -1,6 +1,6 @@
 {
   "name": "@adriangalilea/tghtml",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Transform arbitrary HTML (especially from LLMs) into Telegram-compatible HTML format with opinionated, consistent styling",
   "license": "MIT",
   "author": "Adrian Galilea <adriangalilea@gmail.com> (https://adriangalilea.com)",

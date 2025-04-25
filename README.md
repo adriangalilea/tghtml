@@ -2,18 +2,28 @@
 
 [![JSR](https://jsr.io/badges/@adriangalilea/tghtml)](https://jsr.io/@adriangalilea/tghtml)
 
-A specialized Deno library that transforms arbitrary HTML (especially from LLMs) into Telegram-compatible HTML format with opinionated styling rules.
+A specialized Deno library that transforms arbitrary HTML (especially from LLMs) into
+Telegram-compatible HTML format with opinionated styling rules.
 
 ## Why This Exists
 
 When working with LLMs and Telegram bots, formatting text properly is surprisingly challenging:
 
-1. **Telegram's HTML Subset**: Telegram only supports [a limited set of HTML tags](https://core.telegram.org/bots/api#html-style) for message formatting
-2. **LLM Output Formatting**: LLMs often generate rich HTML that exceeds Telegram's supported elements
-3. **Visual Consistency**: An LLM will format HTML bakcwards from the desired look into HTML, meaning that elements like `<p>` or `<div>` tags are often to create spacing and structure, but telegram don't support them, so we'll try to translate this expectations into new lines and consistent spacing that is intuitively consistent with the intent of the original HTML
-4. **Formatting Chaos**: Without strict formatting rules, messages can become inconsistent and hard to read
+1. **Telegram's HTML Subset**: Telegram only supports
+   [a limited set of HTML tags](https://core.telegram.org/bots/api#html-style) for message
+   formatting
+2. **LLM Output Formatting**: LLMs often generate rich HTML that exceeds Telegram's supported
+   elements
+3. **Visual Consistency**: An LLM will format HTML bakcwards from the desired look into HTML,
+   meaning that elements like `<p>` or `<div>` tags are often to create spacing and structure, but
+   telegram don't support them, so we'll try to translate this expectations into new lines and
+   consistent spacing that is intuitively consistent with the intent of the original HTML
+4. **Formatting Chaos**: Without strict formatting rules, messages can become inconsistent and hard
+   to read
 
-Existing solutions like [telegramify-markdown](https://github.com/skoropadas/telegramify-markdown) work with limitations for Markdown, but HTML offers better control and structure - especially since LLMs naturally conform better to HTML/XML syntax.
+Existing solutions like [telegramify-markdown](https://github.com/skoropadas/telegramify-markdown)
+work with limitations for Markdown, but HTML offers better control and structure - especially since
+LLMs naturally conform better to HTML/XML syntax.
 
 ## Installation
 
@@ -34,14 +44,14 @@ import { transform } from "@adriangalilea/tghtml";
 const telegramHtml = transform(
   `<h1>This is a header</h1>
   <p>This is a paragraph.</p>
-  <blockquote>This is a quote</blockquote>`
+  <blockquote>This is a quote</blockquote>`,
 );
 // Result: "<b><u>This is a header</u></b>\n\nThis is a paragraph.\n\n<blockquote>This is a quote</blockquote>"
 //          ↑ Formatting maintains structure
 
 // Custom spoiler tags are converted to Telegram format
 const spoilerHtml = transform(
-  `<spoiler>Hidden text</spoiler>`
+  `<spoiler>Hidden text</spoiler>`,
 );
 // Result: "<tg-spoiler>Hidden text</tg-spoiler>"
 ```
@@ -52,43 +62,52 @@ This library follows these core principles:
 
 1. **Preserve Content**: Never lose text content when transforming HTML
 2. **Maintain Structure**: Keep the semantic structure while removing unsupported tags
-3. **Be Telegram-Compliant**: Ensure output only contains [Telegram-supported HTML tags](https://core.telegram.org/bots/api#html-style)
+3. **Be Telegram-Compliant**: Ensure output only contains
+   [Telegram-supported HTML tags](https://core.telegram.org/bots/api#html-style)
 4. **Handle Malformed Input**: Gracefully process potentially faulty HTML from LLMs
 5. **Keep It Simple**: Provide a straightforward API with sensible defaults
-6. **Preserve Visual Representation**: Maintain the visual experience expected by users, not just convert tags
+6. **Preserve Visual Representation**: Maintain the visual experience expected by users, not just
+   convert tags
 7. **Opinionated Styling**: Apply consistent rules for spacing, newlines and formatting
 
 ### Opinionated Styling and Formatting Rules
 
-The library takes a deliberately opinionated approach to formatting to ensure consistent, readable output:
+The library takes a deliberately opinionated approach to formatting to ensure consistent, readable
+output:
 
-- **Between Tags**: Newlines and whitespace between tags are normalized to follow consistent spacing patterns
-- **Inside Blockquotes**: Newlines inside blockquotes are preserved to maintain their intended formatting
-- **Maximum Newlines**: No more than 2 consecutive newlines are allowed anywhere to prevent excessive spacing
+- **Between Tags**: Newlines and whitespace between tags are normalized to follow consistent spacing
+  patterns
+- **Inside Blockquotes**: Newlines inside blockquotes are preserved to maintain their intended
+  formatting
+- **Maximum Newlines**: No more than 2 consecutive newlines are allowed anywhere to prevent
+  excessive spacing
 - **Whitespace Handling**: Excess whitespace (multiple spaces, tabs) is collapsed to a single space
-- **Semantic Spacing**: Different elements get appropriate spacing (e.g., paragraphs get double newlines, blockquotes get single newlines)
-- **Visual Hierarchy**: Headings and important elements maintain visual distinctiveness through careful styling
+- **Semantic Spacing**: Different elements get appropriate spacing (e.g., paragraphs get double
+  newlines, blockquotes get single newlines)
+- **Visual Hierarchy**: Headings and important elements maintain visual distinctiveness through
+  careful styling
 
-These rules are enforced throughout the transformation process to ensure that the output is always visually consistent, regardless of how messy the input HTML might be.
+These rules are enforced throughout the transformation process to ensure that the output is always
+visually consistent, regardless of how messy the input HTML might be.
 
 Note: This library has no external dependencies except for Deno DOM.
 
 ## How It Works
 
-| Input HTML | Transformation | Result |
-|------------|----------------|--------|
-| Supported tags (`<b>`, `<i>`, etc.) | Preserved as-is | `<b>Bold text</b>` → `<b>Bold text</b>` |
-| Non-supported tags (`<div>`, etc.) | Tag removed, content preserved | `<div>Content</div>` → `Content` |
-| `<p>` tags | Removed, appropriate spacing added | `<p>Para 1</p><p>Para 2</p>` → `Para 1\n\nPara 2\n\n` |
-| Heading tags (`<h1>`) | Converted to bold + underline | `<h1>Title</h1>` → `<b><u>Title</u></b>\n\n` |
-| Heading tags (`<h2>`, `<h3>`, etc.) | Converted to bold | `<h2>Subtitle</h2>` → `<b>Subtitle</b>\n\n` |
-| Custom `<spoiler>` tag | Converted to Telegram format | `<spoiler>Text</spoiler>` → `<tg-spoiler>Text</tg-spoiler>` |
-| List items | Converted to text with bullets | `<li>Item</li>` → `• Item\n` |
-| URLs without protocol | `https://` added | `<a href="example.com">` → `<a href="https://example.com">` |
-| Nested structures | Processed recursively | `<div><b>Bold</b> text</div>` → `<b>Bold</b> text` |
-| HTML entities | Converted to characters | `&lt;tag&gt;` → `<tag>` |
-| Malformed HTML | Fixed when possible | `<b>Bold text</div>` → `<b>Bold text</b>` |
-| Blockquotes | Preserved with internal newlines | `<blockquote>Line 1\nLine 2</blockquote>` → `<blockquote>Line 1\nLine 2</blockquote>` |
+| Input HTML                          | Transformation                     | Result                                                                                |
+| ----------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------- |
+| Supported tags (`<b>`, `<i>`, etc.) | Preserved as-is                    | `<b>Bold text</b>` → `<b>Bold text</b>`                                               |
+| Non-supported tags (`<div>`, etc.)  | Tag removed, content preserved     | `<div>Content</div>` → `Content`                                                      |
+| `<p>` tags                          | Removed, appropriate spacing added | `<p>Para 1</p><p>Para 2</p>` → `Para 1\n\nPara 2\n\n`                                 |
+| Heading tags (`<h1>`)               | Converted to bold + underline      | `<h1>Title</h1>` → `<b><u>Title</u></b>\n\n`                                          |
+| Heading tags (`<h2>`, `<h3>`, etc.) | Converted to bold                  | `<h2>Subtitle</h2>` → `<b>Subtitle</b>\n\n`                                           |
+| Custom `<spoiler>` tag              | Converted to Telegram format       | `<spoiler>Text</spoiler>` → `<tg-spoiler>Text</tg-spoiler>`                           |
+| List items                          | Converted to text with bullets     | `<li>Item</li>` → `• Item\n`                                                          |
+| URLs without protocol               | `https://` added                   | `<a href="example.com">` → `<a href="https://example.com">`                           |
+| Nested structures                   | Processed recursively              | `<div><b>Bold</b> text</div>` → `<b>Bold</b> text`                                    |
+| HTML entities                       | Converted to characters            | `&lt;tag&gt;` → `<tag>`                                                               |
+| Malformed HTML                      | Fixed when possible                | `<b>Bold text</div>` → `<b>Bold text</b>`                                             |
+| Blockquotes                         | Preserved with internal newlines   | `<blockquote>Line 1\nLine 2</blockquote>` → `<blockquote>Line 1\nLine 2</blockquote>` |
 
 ### Complex Examples
 
@@ -161,12 +180,13 @@ also with multiple lines</blockquote>"
 
 ### Special Cases
 
-While `<spoiler>` is not a standard HTML tag, it's more intuitive for LLMs. It's easier to teach an LLM to use `<spoiler>` rather than `<tg-spoiler>` or `<span class="tg-spoiler">`.
+While `<spoiler>` is not a standard HTML tag, it's more intuitive for LLMs. It's easier to teach an
+LLM to use `<spoiler>` rather than `<tg-spoiler>` or `<span class="tg-spoiler">`.
 
 ```typescript
 // Custom spoiler tag
 transform(
-  `<spoiler>Hidden content</spoiler>`
+  `<spoiler>Hidden content</spoiler>`,
 );
 // → "<tg-spoiler>Hidden content</tg-spoiler>"
 
@@ -189,14 +209,14 @@ with <b>bold</b> formatting
 
 // URL handling
 transform(
-  `<a href="example.com">Link</a> vs <a href="https://secure.org">Secure Link</a>`
+  `<a href="example.com">Link</a> vs <a href="https://secure.org">Secure Link</a>`,
 );
 // → "<a href=\"https://example.com\">Link</a> vs <a href=\"https://secure.org\">Secure Link</a>"
 
 // Malformed HTML handling
 transform(
   `<div><b>Unclosed bold tag</div> and <blockquote>messy quote
-  with newlines</blockqote>`
+  with newlines</blockqote>`,
 );
 // → "<b>Unclosed bold tag</b> and <blockquote>messy quote\nwith newlines</blockquote>"
 ```
