@@ -33,6 +33,34 @@ const TELEGRAM_ALLOWED_ATTRIBUTES: Record<string, string[]> = {
 };
 
 /**
+ * Strips < and > from invalid HTML tags
+ */
+function stripInvalidTags(html: string): string {
+  // Define all valid tags (both HTML and Telegram-specific)
+  const validTags = new Set([
+    ...TELEGRAM_ALLOWED_TAGS,
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'div', 'p', 'section', 'article', 'header', 'footer',
+    'ul', 'ol', 'li', 'br', 'span', 'spoiler',
+    'html', 'head', 'body', 'meta', 'title', // Document structure tags
+  ]);
+  
+  // Replace < and > in invalid tags
+  return html.replace(/<\/?([^>\s\/]+)([^>]*)>/g, (match, tag) => {
+    const tagLower = tag.toLowerCase();
+    
+    // Check if it's a valid tag
+    if (!validTags.has(tagLower)) {
+      // Invalid tag - just remove the < and >
+      console.debug(`Stripping invalid tag: ${match}`);
+      return match.substring(1, match.length - 1); // Remove < and >
+    }
+    
+    return match;
+  });
+}
+
+/**
  * Transforms HTML into Telegram-compatible format with opinionated spacing.
  *
  * @param html HTML string to transform
@@ -49,6 +77,9 @@ export function transform(html: string): string {
     if (!html.includes("<") || !html.includes(">")) {
       return sanitizeTextOnly(html);
     }
+
+    // Strip unknown/invalid tags before parsing
+    html = stripInvalidTags(html);
 
     // Parse HTML to DOM - we'll handle whitespace in the processing functions
     const dom = parseHTML(html.trim());
