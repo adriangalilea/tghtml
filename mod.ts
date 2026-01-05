@@ -130,6 +130,9 @@ function processNode(node: Node): string {
     if (isInBlockquote) {
       // For blockquotes: preserve newlines, normalize spaces, limit consecutive newlines to 2
       const normalized = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
         .replace(/[ \t]+/g, " ") // Convert multiple spaces/tabs to single space
         .replace(/\n[ \t]+/g, "\n") // Remove leading spaces after newlines
         .replace(/[ \t]+\n/g, "\n") // Remove trailing spaces before newlines
@@ -137,8 +140,12 @@ function processNode(node: Node): string {
 
       return normalized;
     } else {
-      // For all other text nodes: normalize whitespace to single spaces
-      const normalized = text.replace(/\s+/g, " ");
+      // For all other text nodes: normalize whitespace and escape HTML entities
+      const normalized = text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\s+/g, " ");
       return normalized;
     }
   }

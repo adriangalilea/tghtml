@@ -274,3 +274,29 @@ inside blockquote
 <i>and nested formatting with more newlines</i></blockquote>`;
   assertEquals(transform(input), expected);
 });
+
+// === HTML Entity Escaping ===
+
+Deno.test("Escapes < and > in text content", () => {
+  const input = "<p>Value is < 30% and > 10%</p>";
+  const expected = "Value is &lt; 30% and &gt; 10%";
+  assertEquals(transform(input), expected);
+});
+
+Deno.test("Escapes & in text content", () => {
+  const input = "<p>Tom & Jerry</p>";
+  const expected = "Tom &amp; Jerry";
+  assertEquals(transform(input), expected);
+});
+
+Deno.test("Escapes HTML entities in blockquotes", () => {
+  const input = "<blockquote>Price < $100 & quality > average</blockquote>";
+  const expected = "<blockquote>Price &lt; $100 &amp; quality &gt; average</blockquote>";
+  assertEquals(transform(input), expected);
+});
+
+Deno.test("Escapes HTML entities while preserving valid tags", () => {
+  const input = "<p><b>Stats:</b> GDP < 30% & growth > 5%</p>";
+  const expected = "<b>Stats:</b> GDP &lt; 30% &amp; growth &gt; 5%";
+  assertEquals(transform(input), expected);
+});
