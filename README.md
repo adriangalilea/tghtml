@@ -1,5 +1,7 @@
 # tghtml
 
+> **Archived.** Superseded by [`@adriangalilea/utils/tg-html`](https://github.com/adriangalilea/ts-utils) (npm `@adriangalilea/utils` ≥1.3.0): the same transform, rewritten zero-dependency and Worker-safe, with the lossy edge cases fixed (stray `<`/`>` escape instead of vanishing; unknown tags drop markup but keep content). Existing jsr releases stay published; nothing new lands here.
+
 [![JSR](https://jsr.io/badges/@adriangalilea/tghtml)](https://jsr.io/@adriangalilea/tghtml)
 
 A specialized Deno library that transforms arbitrary HTML (especially from LLMs) into
